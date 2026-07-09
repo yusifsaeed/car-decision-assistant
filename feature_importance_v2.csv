@@ -1,54 +1,54 @@
 ,0
-CarAge,0.4812055575346372
-Model_enc,0.154249742218908
-Brand_enc,0.13249356485076696
-Transmission_Manual,0.0633748488856231
-EngineCC,0.05554353828240256
-ModelListingCount,0.052150075979147975
-Mileage,0.025536132803924944
-FuelType_Unknown,0.015719436155188393
-HasEngineCC,0.00776256680016299
-FuelType_Gas,0.0034103712679190296
-MileagePerYear,0.0026269774511727267
-Source_Hatla2ee,0.0009918280597045886
-Governorate_Alexandria,0.000499848566090158
-Governorate_Cairo,0.0003876684828719862
-FuelType_Electric,0.0003330509246682739
-Governorate_Damietta,6.958644825642846e-05
-Governorate_Giza,5.956361452598424e-05
-FuelType_Plug-in Hybrid,3.9976731020407996e-05
-Governorate_Qalyubia,3.98300017900588e-05
-Governorate_Asyut,2.5517905940020125e-05
-FuelType_Hybrid,2.4461781841914054e-05
-FuelType_Natural Gas,1.9001190445747107e-05
-Governorate_Ismailia,8.360985782218666e-06
-Governorate_El Minya,7.058238726279087e-06
-Governorate_Red Sea,5.238140537822122e-06
-Governorate_Sohag,4.8796758607971835e-06
-Governorate_Qena,3.9478330420283925e-06
-Governorate_Port Said,2.609043884382878e-06
-Governorate_Kafr el-Sheikh,2.536481026355064e-06
-Governorate_Beheira,0.0
+CarAge,0.4755378782536809
+Model_enc,0.1606448419233283
+Brand_enc,0.11864998709968264
+Transmission_Manual,0.0633508094209551
+ModelListingCount,0.04854318455034298
+EngineCC,0.04606638027699041
+Mileage,0.02610194169912737
+FuelType_Unknown,0.016149110032436007
+HasEngineCC,0.008934432074467424
+Source_Hatla2ee,0.0043963782599354545
+FuelType_Gas,0.0028284544409893086
+MileagePerYear,0.002447077695463193
+Governorate_Cairo,0.0002953768557572567
+FuelType_Electric,0.0002472506843414074
+FuelType_Natural Gas,0.00022164651416811676
+Governorate_Alexandria,0.00012497901641897458
+FuelType_Hybrid,0.00012291702823838402
+Governorate_Giza,0.0001109028983925231
+Governorate_Qalyubia,5.210214467896157e-05
+Governorate_Qena,1.7989821900113445e-05
+Governorate_Sharqia,8.842713971932148e-06
+Governorate_Suez,6.193799355916352e-06
+FuelType_Plug-in Hybrid,2.549510401142485e-06
 Governorate_Aswan,0.0
 Governorate_Al Qalyubia,0.0
-Governorate_Beni Suef,0.0
-Governorate_El-Alamein,0.0
+Governorate_Monufia,0.0
+Governorate_Beheira,0.0
 Governorate_El Mansoura,0.0
-Governorate_El Faiyum,0.0
-Governorate_Ben Suef,0.0
-Governorate_Unknown,0.0
-Governorate_Mariotya,0.0
-Governorate_El-Arish,0.0
+Governorate_Beni Suef,0.0
+Governorate_Ismailia,0.0
 Governorate_Greater Cairo ( Cairo + Giza),0.0
+Governorate_Kafr El Cheik,0.0
+Governorate_El-Alamein,0.0
+Governorate_El Minya,0.0
+Governorate_El-Arish,0.0
 Governorate_El Wadi El Gedid,0.0
-Governorate_Marsa Alam,0.0
+Governorate_El Faiyum,0.0
+Governorate_Sinai,0.0
+Governorate_Port Said,0.0
+Governorate_Sharm el-Sheikh,0.0
+Governorate_Red Sea,0.0
 Governorate_Marsa Matrouh,0.0
+Governorate_Mariotya,0.0
+Governorate_Kafr el-Sheikh,0.0
 Governorate_Luxor,0.0
 Governorate_South Sinai,0.0
-Governorate_Sharm el-Sheikh,0.0
-Governorate_Sinai,0.0
-Governorate_Suez,-1.4432855635349018e-06
-Governorate_Sharqia,-9.400950518795304e-06
-Governorate_Gharbia,-1.0738787427772012e-05
-Governorate_Monufia,-2.473070301473035e-05
-Governorate_Dakahlia,-3.1127841977895976e-05
+Governorate_Sohag,0.0
+Governorate_Unknown,0.0
+Governorate_Gharbia,-4.983336973837793e-06
+Governorate_Dakahlia,-5.5912573659056e-06
+Governorate_Ben Suef,-1.3180437204912687e-05
+Governorate_Damietta,-3.109347270546792e-05
+Governorate_Asyut,-6.112142799083453e-05

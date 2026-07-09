@@ -25,6 +25,51 @@ def parse_number(x):
     return float(s) if s else np.nan
 
 
+# brand acronyms that should always render upper-case regardless of which casing
+# happened to be more frequent in the scraped data (e.g. "Gmc" -> "GMC")
+BRAND_ACRONYMS = {'jac', 'byd', 'baic', 'ds', 'gmc', 'exeed', 'rox'}
+
+
+def build_brand_canon_map(brand_series):
+    """Collapse case-duplicate brands ('JAC' vs 'Jac') into one canonical spelling."""
+    import collections
+    groups = collections.defaultdict(list)
+    for b in brand_series.dropna():
+        groups[b.lower()].append(b)
+    canon = {}
+    for low, variants in groups.items():
+        if low in BRAND_ACRONYMS:
+            canon[low] = low.upper()
+        else:
+            canon[low] = collections.Counter(variants).most_common(1)[0][0]
+    return canon
+
+
+def fix_brand_model_pollution(df):
+    """Some Hatla2ee rows have the FULL 'Brand Model' string dumped into Brand
+    (e.g. Brand='Mercedes C 180', Model='Imported') because the scraper mis-split
+    them. Detect these by: Brand has 2+ words AND the first word is itself a
+    real standalone brand elsewhere in the data. Move the remainder into Model."""
+    brand_lower = df['Brand'].dropna().astype(str).str.strip()
+    single_word_brands = set(
+        b.lower() for b in brand_lower.unique() if isinstance(b, str) and len(b.split()) == 1
+    )
+    n_words = brand_lower.str.split().str.len()
+    first_word_lower = brand_lower.str.split().str[0].str.lower()
+    polluted_notnull = (n_words >= 2) & first_word_lower.isin(single_word_brands)
+    polluted = polluted_notnull.reindex(df.index, fill_value=False)
+
+    fixed_brand = df['Brand'].copy()
+    fixed_model = df['Model'].copy()
+    words = brand_lower[polluted_notnull].str.split()
+    fixed_brand.loc[polluted] = words.str[0].values
+    fixed_model.loc[polluted] = words.str[1:].str.join(' ').values
+    n_fixed = polluted.sum()
+    if n_fixed:
+        print(f"Fixed {n_fixed} rows where Brand contained 'Brand + Model' together")
+    return fixed_brand, fixed_model
+
+
 def extract_governorate(loc):
     """'Tagamo3 - New Cairo, Cairo' -> 'Cairo'; 'Giza' -> 'Giza'; NaN -> NaN"""
     if pd.isna(loc):
@@ -70,6 +115,16 @@ df = pd.concat([cc, h], ignore_index=True)
 for col in ['Brand', 'Model', 'Transmission', 'FuelType', 'Location']:
     df[col] = df[col].astype(str).str.strip()
     df.loc[df[col].isin(['nan', 'Null', '']), col] = np.nan
+
+# NEW: fix rows where Brand and Model got mashed together (Hatla2ee scraper bug),
+# e.g. Brand='Mercedes C 180' -> Brand='Mercedes', Model='C 180'
+fixed_brand, fixed_model = fix_brand_model_pollution(df)
+df['Brand'] = fixed_brand
+df['Model'] = fixed_model
+
+# NEW: collapse case-only brand duplicates (JAC/Jac, BYD/Byd, GMC/Gmc, ...)
+brand_canon = build_brand_canon_map(df['Brand'])
+df['Brand'] = df['Brand'].apply(lambda b: brand_canon.get(b.lower(), b) if pd.notna(b) else b)
 
 # NEW: governorate feature (low-cardinality, usable as a categorical)
 df['Governorate'] = df['Location'].apply(extract_governorate)
