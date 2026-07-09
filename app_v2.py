@@ -92,6 +92,17 @@ with col2:
 
 st.divider()
 
+car_age_check = max(1, CURRENT_YEAR - year)
+km_per_year = mileage / car_age_check
+if km_per_year > 35_000:
+    st.warning(
+        f"⚠️ {mileage:,.0f} km on a {year} car works out to ~{km_per_year:,.0f} km/year, "
+        "well above typical usage (~15-20K km/year). The model will price this as an "
+        "unusually heavily-used car, which can make it look cheaper than a slightly older "
+        "car with more typical mileage. Double check the Year and Mileage are correct.",
+        icon="⚠️"
+    )
+
 if st.button("Predict price 💰"):
     point, low, high = predict_price(brand, model_name, year, mileage, transmission,
                                       fuel_type, engine_cc, 'ContactCars', governorate)

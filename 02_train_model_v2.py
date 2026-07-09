@@ -98,11 +98,20 @@ results.append(evaluate("Ridge Regression", Ridge(alpha=1.0),
                          X_train_lin, y_train, X_test_lin, y_test, price_test))
 
 rf = RandomForestRegressor(n_estimators=300, max_depth=18, min_samples_leaf=2,
-                            n_jobs=-1, random_state=42)
+                            n_jobs=-1, random_state=42,
+                            monotonic_cst=[-1 if col in ('CarAge', 'Mileage') else 0
+                                           for col in X_train_ohe.columns])
 results.append(evaluate("Random Forest", rf, X_train_ohe, y_train, X_test_ohe, y_test, price_test))
 
+# monotonic constraint: price must not increase as CarAge/Mileage increase (all else equal).
+# Without this, HGBR predictions can be non-monotonic in Year for cars near the edge of the
+# training distribution (e.g. brand-new 2025/2026 listings, which are rare in the data) -
+# a newer car could end up predicted cheaper than an older one of the same model, which
+# doesn't make economic sense and looks like a bug to users.
+monotonic_cst = [-1 if col in ('CarAge', 'Mileage') else 0 for col in X_train_ohe.columns]
+
 # ---------- HistGradientBoosting: default params first ----------
-hgb_default = HistGradientBoostingRegressor(random_state=42)
+hgb_default = HistGradientBoostingRegressor(random_state=42, monotonic_cst=monotonic_cst)
 results.append(evaluate("HistGradientBoosting (default)", hgb_default,
                          X_train_ohe, y_train, X_test_ohe, y_test, price_test))
 
@@ -116,7 +125,8 @@ param_dist = {
     'min_samples_leaf': [10, 20, 40],
 }
 search = RandomizedSearchCV(
-    HistGradientBoostingRegressor(random_state=42, early_stopping=True, validation_fraction=0.1),
+    HistGradientBoostingRegressor(random_state=42, early_stopping=True, validation_fraction=0.1,
+                                   monotonic_cst=monotonic_cst),
     param_distributions=param_dist, n_iter=25, cv=3, scoring='r2',
     random_state=42, n_jobs=-1, verbose=0
 )
@@ -135,7 +145,8 @@ joblib.dump(list(X_train_ohe.columns), '/home/claude/car_price_model/feature_col
 best_params = search.best_params_.copy()
 quantile_models = {}
 for q in [0.1, 0.5, 0.9]:
-    qm = HistGradientBoostingRegressor(loss='quantile', quantile=q, random_state=42, **best_params)
+    qm = HistGradientBoostingRegressor(loss='quantile', quantile=q, random_state=42,
+                                        monotonic_cst=monotonic_cst, **best_params)
     qm.fit(X_train_ohe, y_train)
     quantile_models[q] = qm
 joblib.dump(quantile_models, '/home/claude/car_price_model/quantile_models_v2.pkl')

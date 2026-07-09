@@ -116,6 +116,17 @@ for col in ['Brand', 'Model', 'Transmission', 'FuelType', 'Location']:
     df[col] = df[col].astype(str).str.strip()
     df.loc[df[col].isin(['nan', 'Null', '']), col] = np.nan
 
+# NEW: drop rows where the whole row got column-shifted by the scraper - Brand ends up
+# holding a price string like '630,000 EGP' and Model holds 'Brand Model Year' combined,
+# with the remaining fields also unreliable. Found via ContactCars only, 173 rows.
+# These can't be safely reconstructed (the embedded Year often doesn't even match the
+# Year column), so they're dropped rather than guessed at.
+row_shifted = df['Brand'].astype(str).str.contains('EGP', na=False)
+n_shifted = row_shifted.sum()
+if n_shifted:
+    print(f"Dropping {n_shifted} rows where Brand/Model/Price got column-shifted by the scraper")
+df = df[~row_shifted]
+
 # NEW: fix rows where Brand and Model got mashed together (Hatla2ee scraper bug),
 # e.g. Brand='Mercedes C 180' -> Brand='Mercedes', Model='C 180'
 fixed_brand, fixed_model = fix_brand_model_pollution(df)
@@ -125,6 +136,12 @@ df['Model'] = fixed_model
 # NEW: collapse case-only brand duplicates (JAC/Jac, BYD/Byd, GMC/Gmc, ...)
 brand_canon = build_brand_canon_map(df['Brand'])
 df['Brand'] = df['Brand'].apply(lambda b: brand_canon.get(b.lower(), b) if pd.notna(b) else b)
+
+# safety net: no legitimate brand name contains a digit; anything left is scraper junk
+still_bad = df['Brand'].astype(str).str.contains(r'\d', regex=True, na=False)
+if still_bad.sum():
+    print(f"Dropping {still_bad.sum()} more rows with digit-containing Brand (unhandled corruption)")
+df = df[~still_bad]
 
 # NEW: governorate feature (low-cardinality, usable as a categorical)
 df['Governorate'] = df['Location'].apply(extract_governorate)

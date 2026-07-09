@@ -1,7 +1,5 @@
 {
   "brands": [
-    "1,325,000 EGP",
-    "2,150,000 EGP",
     "Acura",
     "Alfa Romeo",
     "Arcfox",
@@ -109,12 +107,6 @@
     "Zotye"
   ],
   "brand_models": {
-    "1,325,000 EGP": [
-      "D.P.662,500"
-    ],
-    "2,150,000 EGP": [
-      "D.P.1,075,000"
-    ],
     "Acura": [
       "Other"
     ],
