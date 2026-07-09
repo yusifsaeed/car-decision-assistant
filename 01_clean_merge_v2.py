@@ -177,9 +177,44 @@ df = df.merge(model_counts, on=['Brand', 'Model'], how='left')
 after = len(df)
 print(f"Rows before cleaning: {before} | after cleaning: {after} | dropped: {before - after}")
 
-df['CarAge'] = 2026 - df['Year']
-df['CarAge'] = df['CarAge'].clip(lower=0)
-# NEW: usage-intensity feature - km driven per year of ownership (capped to avoid
+# ============================================================================
+# BUGFIX (v2.1): CarAge used to be a flat `2026 - Year`, a hardcoded reference
+# year. Two consequences:
+#   1) Staleness: needs bumping by hand on every future retrain.
+#   2) MUCH WORSE - training-time collapse: every row with Year >= 2026 (the
+#      year the data happened to be scraped) got CarAge=0, identical to every
+#      OTHER Year>=2026 row, regardless of when that specific listing was
+#      actually posted. Since CarAge carries ~48% of feature importance, the
+#      model never learned to distinguish "current-model-year" cars from each
+#      other for that whole slice of the data - it just falls back to
+#      Brand/Model + Mileage. This is exactly why predictions for the current
+#      model year look plausible-but-unreliable in the app.
+#
+# FIX: compute CarAge relative to each row's OWN PostedOn date, not one fixed
+# year. A 2019-model car posted for sale in 2021 gets CarAge=2 (its real age
+# at time of sale), not "current_year - 2019". This also makes the training
+# data self-referential instead of stale - future retrains get correct ages
+# for new listings automatically, no hardcoded number to update.
+# ============================================================================
+posted_year = pd.to_datetime(df['PostedOn'], errors='coerce').dt.year
+
+# Fallback for rows where PostedOn is missing/unparseable: use the most
+# recent posted_year seen in the data as a stand-in "today" for that row,
+# instead of a hardcoded constant.
+fallback_year = posted_year.max()
+if pd.isna(fallback_year):
+    raise ValueError(
+        "PostedOn could not be parsed for ANY row - inspect "
+        "df['PostedOn'].head(20) raw values and fix the parse before relying "
+        "on this fallback."
+    )
+n_fallback = posted_year.isna().sum()
+if n_fallback:
+    print(f"NOTE: {n_fallback} rows had unparseable PostedOn; using fallback year {fallback_year:.0f} for CarAge")
+effective_year = posted_year.fillna(fallback_year)
+
+df['CarAge'] = (effective_year - df['Year']).clip(lower=0)
+# usage-intensity feature - km driven per year of ownership (capped to avoid
 # div-by-zero blowups on brand-new cars)
 df['MileagePerYear'] = df['Mileage'] / df['CarAge'].replace(0, 1)
 df['MileagePerYear'] = df['MileagePerYear'].clip(upper=100_000)
@@ -189,3 +224,5 @@ df.to_csv('/home/claude/car_price_model/cleaned_merged_v2.csv', index=False)
 print(df.shape)
 print(df[['Brand', 'Model', 'Governorate', 'ModelListingCount', 'MileagePerYear']].head())
 print(df.isnull().sum())
+print("\n[v2.1] CarAge now computed per-row from PostedOn instead of a fixed reference year.")
+print(df[['Year', 'PostedOn', 'CarAge']].head())
