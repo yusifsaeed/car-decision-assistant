@@ -47,6 +47,20 @@ df.loc[(df['Engine_CC'] < 600) | (df['Engine_CC'] > 8000), 'Engine_CC'] = np.nan
 after = len(df)
 print(f"Rows before cleaning: {before} | after cleaning: {after} | dropped: {before - after}")
 
+# ---------- per-model outlier removal ----------
+# A global price bound (30K-20M) can't catch a specific model being wildly mispriced
+# (e.g. a handful of "Nissan Sunny" listings at 8.8M EGP skewing that model's typical price).
+# For any Brand+Model with enough listings, drop rows outside 1.5x IQR of that group's price.
+before_group = len(df)
+group_size = df.groupby(['Brand', 'Model'])['Price'].transform('size')
+q1 = df.groupby(['Brand', 'Model'])['Price'].transform(lambda s: s.quantile(0.25))
+q3 = df.groupby(['Brand', 'Model'])['Price'].transform(lambda s: s.quantile(0.75))
+iqr = q3 - q1
+lower, upper = q1 - 1.5 * iqr, q3 + 1.5 * iqr
+keep = (group_size < 10) | ((df['Price'] >= lower) & (df['Price'] <= upper))
+df = df[keep]
+print(f"Per-model outlier removal: {before_group} -> {len(df)} (dropped {before_group - len(df)})")
+
 # ---------- feature engineering ----------
 df['CarAge'] = (2026 - df['Year']).clip(lower=0)
 df['LogPrice'] = np.log1p(df['Price'])

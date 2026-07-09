@@ -53,6 +53,7 @@ model, feature_columns, brand_enc, model_enc, city_enc, lookup = load_artifacts(
 brands = lookup['brands']
 brand_models = lookup['brand_models']
 cities = lookup['cities']
+model_counts = lookup.get('model_counts', {})
 
 FUEL_TYPES = ['Gas', 'Diesel', 'Electric', 'Hybrid', 'Plug-in Hybrid', 'Natural Gas']
 CURRENT_YEAR = 2026
@@ -114,17 +115,31 @@ if st.button("Predict price 💰"):
         f'<div class="price-caption">Estimated price for a {year} {brand} {model_name}</div>',
         unsafe_allow_html=True
     )
-    st.info("This is a model estimate (typical error ≈ 24%), not an appraisal. "
+
+    n_samples = model_counts.get(f'{brand}|{model_name}', 0)
+    car_age = max(0, CURRENT_YEAR - year)
+    if n_samples < 30 or (car_age <= 1 and n_samples < 100):
+        st.warning(
+            f"⚠️ Only {n_samples} listings for this exact Brand+Model in the training data"
+            + (" — and very few of those are near-new." if car_age <= 1 else "")
+            + " This prediction is less reliable than usual; cross-check against real listings.",
+            icon="⚠️"
+        )
+
+    st.info("This is a model estimate (typical error ≈ 21%), not an appraisal. "
             "Use it as a reference point alongside real listings.", icon="ℹ️")
 
 with st.expander("ℹ️ About this model"):
     st.write("""
-    - Trained on ~19.4K cleaned car listings (ContactCars + Hatla2ee) after removing
-      duplicates, unrealistic mileage/price/engine values, and corrupted rows.
+    - Trained on ~17.9K cleaned car listings (ContactCars + Hatla2ee) after removing
+      duplicates, unrealistic values, corrupted rows, and per-model mispriced outliers.
     - Model: **XGBoost Regressor**, predicting log-price then converting back to EGP.
-    - Test performance: **R² ≈ 0.77**, MAE ≈ 357K EGP, MAPE ≈ 24%.
+    - Test performance: **R² ≈ 0.84**, MAE ≈ 290K EGP, MAPE ≈ 21%.
     - Price is guaranteed to never increase with higher mileage or an older car age
       (monotonic constraint), so results stay logically consistent.
     - Brand, Model, and City use smoothed target (mean-price) encoding, so unseen
       values fall back to the overall average price.
+    - **Known limitation:** for near-new cars of a budget model with few listings in
+      the training data, the model can skew toward the (higher) average price of
+      near-new cars in general. A ⚠️ warning appears above when this applies.
     """)
