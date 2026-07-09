@@ -5,7 +5,7 @@ import numpy as np
 import pandas as pd
 import streamlit as st
 
-st.set_page_config(page_title="Car Price Predictor", page_icon="🚗", layout="centered")
+st.set_page_config(page_title="Car Decision Assistant", page_icon="🚗", layout="centered")
 
 st.markdown("""
 <style>
@@ -115,14 +115,7 @@ st.divider()
 
 car_age_check = max(1, CURRENT_YEAR - year)
 km_per_year = mileage / car_age_check
-if km_per_year > 35_000:
-    st.warning(
-        f"⚠️ {mileage:,.0f} km on a {year} car works out to ~{km_per_year:,.0f} km/year, "
-        "well above typical usage (~15-20K km/year). The model will price this as an "
-        "unusually heavily-used car, which can make it look cheaper than a slightly older "
-        "car with more typical mileage. Double check the Year and Mileage are correct.",
-        icon="⚠️"
-    )
+
 
 if st.button("Predict price 💰"):
     point, low, high = predict_price(brand, model_name, year, mileage, transmission,
@@ -138,16 +131,3 @@ if st.button("Predict price 💰"):
             "data (~80% of comparable cars fall in it) - it's a market reference, not an appraisal.",
             icon="ℹ️")
 
-with st.expander("ℹ️ About this model"):
-    st.write("""
-    - Trained on merged listings from **ContactCars** and **Hatla2ee** (~19.1K cleaned rows,
-      with per-brand outlier filtering rather than one global price band).
-    - Model: **HistGradientBoostingRegressor** (sklearn's close cousin of XGBoost), tuned with
-      randomized search, predicting log-price then converting back to EGP.
-    - Test performance: **R² ≈ 0.84**, MAE ≈ 270K EGP, MAPE ≈ 20%.
-    - New signals versus the first version: **governorate**, **how common the exact
-      brand/model listing is** in the data, and **km driven per year** (usage intensity),
-      plus a **price range** (10th-90th percentile) instead of a single number.
-    - Brand and Model are encoded using smoothed target (mean-price) encoding, so unseen
-      brands/models fall back to the overall average price.
-    """)
