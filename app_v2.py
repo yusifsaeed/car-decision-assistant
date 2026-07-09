@@ -127,7 +127,5 @@ if st.button("Predict price 💰"):
         f'<div class="price-caption">Estimated price for a {year} {brand} {model_name}</div>',
         unsafe_allow_html=True
     )
-    st.info("The range covers the 10th-90th percentile of similar listings in the training "
-            "data (~80% of comparable cars fall in it) - it's a market reference, not an appraisal.",
-            icon="ℹ️")
+   
 
