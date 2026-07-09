@@ -3,6 +3,7 @@ Predict the price of a single car using the v2 model + encodings.
 Now returns a price RANGE (10th-90th percentile) alongside the point estimate.
 Edit the `car` dict below and run: python3 03_predict_v2.py
 """
+from datetime import date
 import pandas as pd
 import numpy as np
 import joblib
@@ -15,6 +16,15 @@ model_enc = joblib.load('/home/claude/car_price_model/Model_encoding.pkl')
 
 # median listing count fallback for models the training data barely saw
 DEFAULT_LISTING_COUNT = 5
+
+# BUGFIX: previously build_row() computed car_age = max(0, 2026 - car['Year']), hardcoded.
+# That both goes stale year over year AND collapses any Year >= 2026 to the same CarAge=0,
+# so e.g. 2026 and 2027 inputs produced identical predictions (CarAge is ~48% of feature
+# importance). Using the real current year fixes the staleness. It does NOT fix the
+# collapse - the model itself was trained on CarAge clipped the same way - so callers
+# should treat Year > CURRENT_YEAR as "not yet supported" until the model is retrained
+# with finer-grained CarAge (see 01_clean_merge_v2.py / 02_train_model_v2.py notes).
+CURRENT_YEAR = date.today().year
 
 car = {
     'Brand': 'BMW',
@@ -31,7 +41,13 @@ car = {
 
 def build_row(car: dict) -> pd.DataFrame:
     row = {}
-    car_age = max(0, 2026 - car['Year'])
+    if car['Year'] > CURRENT_YEAR:
+        raise ValueError(
+            f"Year {car['Year']} is beyond {CURRENT_YEAR}: the model cannot yet distinguish "
+            f"next-year models from {CURRENT_YEAR}-model cars (see BUGFIX note above). "
+            f"Use Year <= {CURRENT_YEAR} until the model is retrained."
+        )
+    car_age = max(0, CURRENT_YEAR - car['Year'])
     row['CarAge'] = car_age
     row['Mileage'] = car['Mileage']
     row['HasEngineCC'] = int(car.get('EngineCC') is not None)
