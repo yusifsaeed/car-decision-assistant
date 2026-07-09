@@ -1,6 +1,11 @@
 """
 v2 training pipeline. Changes vs v1:
-  - New features: Governorate, ModelListingCount, MileagePerYear
+  - New features: Governorate, ModelListingCount
+  - MileagePerYear was tried and REMOVED: it's derived from Mileage/CarAge, so it moves
+    whenever Mileage or Year changes, and since it wasn't itself monotonically constrained
+    it could silently override the Mileage/CarAge monotonic guarantee (e.g. same car, more
+    mileage, higher predicted price). Raw Mileage + CarAge (both hard-constrained below)
+    already let the tree learn any interaction between them without that loophole.
   - Model: sklearn HistGradientBoostingRegressor (xgboost/lightgbm not installable in this
     sandbox - no network access). HGBR is a very close cousin of XGBoost (same histogram-based
     boosting algorithm) and natively supports missing values + categorical columns, which
@@ -27,7 +32,7 @@ df['Governorate'] = df['Governorate'].fillna('Unknown')
 
 features_cat_high_card = ['Brand', 'Model']
 features_cat_low_card = ['Transmission', 'FuelType', 'Source', 'Governorate']
-features_num = ['CarAge', 'Mileage', 'EngineCC', 'HasEngineCC', 'ModelListingCount', 'MileagePerYear']
+features_num = ['CarAge', 'Mileage', 'EngineCC', 'HasEngineCC', 'ModelListingCount']
 target = 'LogPrice'
 
 X = df[features_cat_high_card + features_cat_low_card + features_num].copy()

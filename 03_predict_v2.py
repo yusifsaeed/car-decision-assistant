@@ -36,7 +36,6 @@ def build_row(car: dict) -> pd.DataFrame:
     row['Mileage'] = car['Mileage']
     row['HasEngineCC'] = int(car.get('EngineCC') is not None)
     row['EngineCC'] = car.get('EngineCC') if car.get('EngineCC') is not None else 1600
-    row['MileagePerYear'] = min(car['Mileage'] / max(car_age, 1), 100_000)
 
     row['Brand_enc'] = brand_enc['mapping'].get(car['Brand'], brand_enc['global_mean'])
     row['Model_enc'] = model_enc['mapping'].get(car['Model'], model_enc['global_mean'])

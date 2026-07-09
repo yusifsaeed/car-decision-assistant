@@ -45,7 +45,6 @@ def build_row(brand, model_name, year, mileage, transmission, fuel_type, engine_
     row['Mileage'] = mileage
     row['HasEngineCC'] = int(engine_cc is not None)
     row['EngineCC'] = engine_cc if engine_cc else 1600
-    row['MileagePerYear'] = min(mileage / max(car_age, 1), 100_000)
 
     row['Brand_enc'] = brand_enc['mapping'].get(brand, brand_enc['global_mean'])
     row['Model_enc'] = model_enc['mapping'].get(model_name, model_enc['global_mean'])
