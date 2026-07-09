@@ -1,0 +1,54 @@
+,0
+CarAge,0.4812055575346372
+Model_enc,0.154249742218908
+Brand_enc,0.13249356485076696
+Transmission_Manual,0.0633748488856231
+EngineCC,0.05554353828240256
+ModelListingCount,0.052150075979147975
+Mileage,0.025536132803924944
+FuelType_Unknown,0.015719436155188393
+HasEngineCC,0.00776256680016299
+FuelType_Gas,0.0034103712679190296
+MileagePerYear,0.0026269774511727267
+Source_Hatla2ee,0.0009918280597045886
+Governorate_Alexandria,0.000499848566090158
+Governorate_Cairo,0.0003876684828719862
+FuelType_Electric,0.0003330509246682739
+Governorate_Damietta,6.958644825642846e-05
+Governorate_Giza,5.956361452598424e-05
+FuelType_Plug-in Hybrid,3.9976731020407996e-05
+Governorate_Qalyubia,3.98300017900588e-05
+Governorate_Asyut,2.5517905940020125e-05
+FuelType_Hybrid,2.4461781841914054e-05
+FuelType_Natural Gas,1.9001190445747107e-05
+Governorate_Ismailia,8.360985782218666e-06
+Governorate_El Minya,7.058238726279087e-06
+Governorate_Red Sea,5.238140537822122e-06
+Governorate_Sohag,4.8796758607971835e-06
+Governorate_Qena,3.9478330420283925e-06
+Governorate_Port Said,2.609043884382878e-06
+Governorate_Kafr el-Sheikh,2.536481026355064e-06
+Governorate_Beheira,0.0
+Governorate_Aswan,0.0
+Governorate_Al Qalyubia,0.0
+Governorate_Beni Suef,0.0
+Governorate_El-Alamein,0.0
+Governorate_El Mansoura,0.0
+Governorate_El Faiyum,0.0
+Governorate_Ben Suef,0.0
+Governorate_Unknown,0.0
+Governorate_Mariotya,0.0
+Governorate_El-Arish,0.0
+Governorate_Greater Cairo ( Cairo + Giza),0.0
+Governorate_El Wadi El Gedid,0.0
+Governorate_Marsa Alam,0.0
+Governorate_Marsa Matrouh,0.0
+Governorate_Luxor,0.0
+Governorate_South Sinai,0.0
+Governorate_Sharm el-Sheikh,0.0
+Governorate_Sinai,0.0
+Governorate_Suez,-1.4432855635349018e-06
+Governorate_Sharqia,-9.400950518795304e-06
+Governorate_Gharbia,-1.0738787427772012e-05
+Governorate_Monufia,-2.473070301473035e-05
+Governorate_Dakahlia,-3.1127841977895976e-05
