@@ -87,7 +87,7 @@ def predict_price(*args):
     return point, low, high
 
 
-st.title("🚗 Car Price Predictor")
+st.title("🚗 Car Decision Assistant")
 st.caption("Estimate the market price of a used car in Egypt, trained on ContactCars + Hatla2ee listings.")
 
 col1, col2 = st.columns(2)
