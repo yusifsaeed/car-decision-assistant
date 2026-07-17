@@ -53,17 +53,7 @@ The used car market in Egypt is fragmented across multiple platforms (ContactCar
 Built on **Databricks** using a **Medallion Architecture** (Bronze → Silver → Gold):
 
 ```
-┌─────────────────┐     ┌───────────────────────────────────────┐     ┌──────────────────────┐
-│  1. DATA SOURCES │     │        2. ETL PIPELINE (Databricks)     │     │  3. OUTPUT/CONSUMPTION │
-│                  │     │                                         │     │                       │
-│  ContactCars     │────▶│  🥉 BRONZE   →  🥈 SILVER  →  🥇 GOLD    │────▶│  Streamlit Dashboard  │
-│  Hatla2ee        │     │  Raw, as-is     Cleaned &     Business-  │     │  Power BI Reports     │
-│  YallaMotor      │     │  from Selenium  validated     ready,     │     │  AI Model (price      │
-│                  │     │                 & standard.   curated    │     │  prediction)          │
-│  (Selenium       │     │                                         │     │                       │
-│   web scraping)  │     │  Delta Lake · PySpark · Unity Catalog ·  │     │                       │
-│                  │     │  Databricks Jobs · MLflow                │     │                       │
-└─────────────────┘     └───────────────────────────────────────┘     └──────────────────────┘
+![DataFlow](ScreenShots/DataFlow.png)
 ```
 
 | Layer | Purpose |
