@@ -4,7 +4,9 @@ import joblib
 import numpy as np
 import pandas as pd
 import streamlit as st
+import os
 
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 st.set_page_config(page_title="Car Decision Assistant", page_icon="🚗", layout="centered")
 
 st.markdown("""
@@ -19,15 +21,14 @@ st.markdown("""
 
 @st.cache_resource
 def load_artifacts():
-    model = joblib.load('best_model_v2.pkl')
-    quantile_models = joblib.load('quantile_models_v2.pkl')
-    feature_columns = joblib.load('feature_columns_v2.pkl')
-    brand_enc = joblib.load('Brand_encoding.pkl')
-    model_enc = joblib.load('Model_encoding.pkl')
-    with open('brand_models.json', encoding='utf-8') as f:
+    model = joblib.load(os.path.join(BASE_DIR, 'best_model_v2.pkl'))
+    quantile_models = joblib.load(os.path.join(BASE_DIR, 'quantile_models_v2.pkl'))
+    feature_columns = joblib.load(os.path.join(BASE_DIR, 'feature_columns_v2.pkl'))
+    brand_enc = joblib.load(os.path.join(BASE_DIR, 'Brand_encoding.pkl'))
+    model_enc = joblib.load(os.path.join(BASE_DIR, 'Model_encoding.pkl'))
+    with open(os.path.join(BASE_DIR, 'brand_models.json'), encoding='utf-8') as f:
         lookup = json.load(f)
     return model, quantile_models, feature_columns, brand_enc, model_enc, lookup
-
 
 model, quantile_models, feature_columns, brand_enc, model_enc, lookup = load_artifacts()
 brands = lookup['brands']
