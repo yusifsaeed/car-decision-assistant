@@ -53,7 +53,7 @@ The used car market in Egypt is fragmented across multiple platforms (ContactCar
 Built on **Databricks** using a **Medallion Architecture** (Bronze → Silver → Gold):
 
 ```
-![DataFlow](ScreenShots/DataFlow.png)
+[![DataFlow](ScreenShots/DataFlow.png)](ScreenShots/DataFlow.png)
 ```
 
 | Layer | Purpose |
