@@ -121,8 +121,8 @@ NHA-4-084/
 ### Installation
 
 ```bash
-git clone https://github.com/nhahub/NHA-4-084.git
-cd NHA-4-084
+git clone https://github.com/yusifsaeed/car-decision-assistant.git
+cd car-decision-assistant
 
 python -m venv venv
 source venv/bin/activate      # Windows: venv\Scripts\activate
